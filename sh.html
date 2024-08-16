@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swipe Line</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: black;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        #canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #clearButton {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: white;
+            color: black;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        #clearButton:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <button id="clearButton">Clear</button>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let startX, startY, startTime;
+
+        canvas.addEventListener('touchstart', function (e) {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            startTime = new Date().getTime();
+        });
+
+        canvas.addEventListener('touchmove', function (e) {
+            const endX = e.touches[0].clientX;
+            const endY = e.touches[0].clientY;
+            const endTime = new Date().getTime();
+
+            const distance = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
+            const time = endTime - startTime;
+
+            const speed = distance / time;
+            const lineWidth = Math.min(speed * 5, 10); // Максимальная ширина линии уменьшена
+
+            // Рисуем линию, не очищая холст
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+            ctx.strokeStyle = 'red';
+            ctx.lineWidth = lineWidth;
+            ctx.stroke();
+
+            startX = endX;
+            startY = endY;
+            startTime = endTime;
+        });
+
+        // Обработчик события для кнопки "Clear"
+        const clearButton = document.getElementById('clearButton');
+        clearButton.addEventListener('click', function () {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Очищаем холст
+        });
+    </script>
+</body>
+</html>
